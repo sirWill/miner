@@ -8,18 +8,19 @@ function getRandom(min, max) {
 var Mines = (function(){
   // static data
   var 
-    // Картинки для вывода клеток поля
-    img_closed = document.getElementById('cell_closed_img'),
-    img_empty = document.getElementById('cell_empty_img'),
-    img_flag = document.getElementById('cell_flag_img'),
-    img_mine = document.getElementById('cell_mine_img'),
-    img_question = document.getElementById('cell_question_img'),
+    colors = {
+      closed : '#e1e1e1',
+      empty : '#cccccc',
+      flag : '#005828',
+      mine : '#ff2a1a',
+      question : '#08afed',
+    },
     // Объект с параметрами поля
     field = {
       width: 10,
       height: 10,
       cells: [],
-      cell_size : 20
+      cell_size : 40
     },
     // Массив с минами, каждая мина = значение x,y
     mines = [],
@@ -35,17 +36,30 @@ var Mines = (function(){
 
   function print_field(){
     var i, j, x, y;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.font= field.cell_size*.6+"px Verdana";
+    ctx.fillStyle = '#ffffff';
     for(i = 0; i<field.height; i++){
       for(j = 0; j < field.width; j++){
+        ctx.save();
         x = field.cell_size * j;
         y = field.cell_size * i;
         if(field.cells[i][j].v == -1){
-          ctx.drawImage(img_mine,x,y);
+          ctx.fillStyle = colors.mine;
+          ctx.fillRect(x,y,x+field.cell_size,y+field.cell_size);
         }else if(field.cells[i][j].v > 0 && field.cells[i][j].v < 9){
-          ctx.drawImage(img_question,x,y);
+          ctx.fillStyle = colors.empty;
+          ctx.fillRect(x,y,x+field.cell_size,y+field.cell_size);
+          ctx.fillStyle = "#000000";
+          ctx.fillText(field.cells[i][j].v, x+field.cell_size*.3, y+field.cell_size*.75)
         }else{
-          ctx.drawImage(img_closed,x,y);
+          ctx.fillStyle = colors.empty;
+          ctx.fillRect(x,y,x+field.cell_size,y+field.cell_size);
         }
+        ctx.rect(x,y,x+field.cell_size,y+field.cell_size);
+        ctx.stroke();
+        ctx.restore();
       }
     }
   }
@@ -90,7 +104,7 @@ var Mines = (function(){
     print: print_field
   };
 
-})();  
+})();
 
 Mines.init();
 Mines.print();
