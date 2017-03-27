@@ -23,7 +23,7 @@ var Mines = (function(){
     },
     // Массив с минами, каждая мина = значение x,y
     mines = [],
-    mines_count = 20,
+    mines_count = 7,
     fieldCanvas = document.getElementById('mines'),
     ctx = fieldCanvas.getContext('2d');
 
