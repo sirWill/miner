@@ -69,11 +69,14 @@ var Mines = (function(){
     
     // Обход соседних ячеек
     // Открывать все пустые соседние клетки
+    // Реализуем обход ячеек через очередь.
+    // Просматриваем ячейки в очереди, добавляем туда соседей клетки, если они содержат цифру или пустоту
     
-    // Обход первой смерти
+    // На пятерку: обход смерти на первом ходу
     update_field();
   });
 
+  // TODO: оптимизировать до перерисовывания только одной ячейки.
   // Отрисовываем все поле в соответствии со статусом клеток
   function update_field(){
     var i, j, x, y;
@@ -127,19 +130,6 @@ var Mines = (function(){
         y = field.cell_size * i;
         ctx.fillStyle = colors.closed;
         ctx.fillRect(x,y,field.cell_size,field.cell_size);
-        
-        /*if(field.cells[i][j].v == -1){
-          ctx.fillStyle = colors.mine;
-          ctx.fillRect(x,y,x+field.cell_size,y+field.cell_size);
-        }else if(field.cells[i][j].v > 0 && field.cells[i][j].v < 9){
-          ctx.fillStyle = colors.empty;
-          ctx.fillRect(x,y,x+field.cell_size,y+field.cell_size);
-          ctx.fillStyle = "#000000";
-          ctx.fillText(field.cells[i][j].v, x+field.cell_size*.3, y+field.cell_size*.75)
-        }else{
-          ctx.fillStyle = colors.empty;
-          ctx.fillRect(x,y,x+field.cell_size,y+field.cell_size);
-        }*/
         ctx.rect(x,y,field.cell_size,field.cell_size);
         ctx.stroke();
         ctx.restore();
