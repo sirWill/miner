@@ -12,13 +12,13 @@
 <body>
   <pre id="debugPrint"></pre>
   <canvas id="mines"></canvas>
-  <div style="display: none;">
-    <img id="cell_closed_img" src="img/cell_closed.png">
-    <img id="cell_empty_img" src="img/cell_empty.png">
-    <img id="cell_flag_img" src="img/cell_flag.png">
-    <img id="cell_mine_img" src="img/cell_mine.png">
-    <img id="cell_question_img" src="img/cell_question.png">
+  <div>
+    <button id="startGame">Новая игра</button>
+    <p id="gameTimer">00:00</p>
+    <p>Мин: <span id="minesCount">7</span></p>
+    <p>Из <span id="fieldSquare"></span> клеток открыто <span id="fieldOpened"></span></p>
   </div>
+  <script src="js/moment.js"></script>
   <script src="js/mines.js"></script>
 </body>
 </html>

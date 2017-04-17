@@ -21,17 +21,31 @@ var Mines = (function(){
       width: 10,
       height: 10,
       cells: [],
-      cell_size : 40
+      cell_size : 40,
+      opened: 0
     },
+
+    timer = {
+      start : null,
+      interval : null
+    },
+
     // Массив с минами, каждая мина = значение x,y
     mines = [],
     mines_count = 7,
+    startGame = document.getElementById('startGame'),
     fieldCanvas = document.getElementById('mines'),
     ctx = fieldCanvas.getContext('2d'),
+    gameOver = false,
 
     buffer = {
       field: null,
-    };
+    },
+    // Элементы интерфейса
+    gameTimer  = document.getElementById('gameTimer'),
+    minesCount = document.getElementById('minesCount'),
+    fieldSquare = document.getElementById('fieldSquare'),
+    fieldOpened = document.getElementById('fieldOpened');
 
   fieldCanvas.width = field.width * field.cell_size;
   fieldCanvas.height = field.height * field.cell_size;
@@ -60,23 +74,53 @@ var Mines = (function(){
 
   fieldCanvas.addEventListener('click', function(e){
     e.preventDefault();
+    if(gameOver) return;
     var
       cell = {
         x : parseInt(e.x/field.cell_size),
         y : parseInt(e.y/field.cell_size),
       };
     field.cells[cell.y][cell.x].s = 1;
+    // TODO: Обработка клика правой кнопкой мыши
     
+    // если попали на мину
+    if(field.cells[cell.y][cell.x].v == -1){
+      gameOver = true;
+      window.alert('GAME OVER!');
+      clearInterval(timer.interval);
+      // TODO: Выводить надпись Game Over поверх игрового поля.
+    }
+
     // Обход соседних ячеек
     // Открывать все пустые соседние клетки
-    // Реализуем обход ячеек через очередь.
-    // Просматриваем ячейки в очереди, добавляем туда соседей клетки, если они содержат цифру или пустоту
+    // Реализуем обход ячеек через очередь и стек.
+    // Добавляем в очередь текущую ячейку
+    // Пока в очереди есть ячейки:
+    //  Смотрим ячейку сверху
+    //    Если ячейка закрыта, то 
+    //      Если в ней больше 0 — открываем ячейку
+    //      Если в ней 0 — добавляем ее в очередь и открываем
+    //  Смотрим ячейку снизу
+    //    Аналогично
+    //  Смотрим ячейку справа
+    //    Аналогично
+    //  Смотрим ячейку слева
+    //    Аналогично
     
-    // На пятерку: обход смерти на первом ходу
+    // TODO: На пятерку: обход смерти на первом ходу
+    // Считаем открытие клетки
+    field.opened++;
+    fieldOpened.textContent = field.opened;
     update_field();
   });
 
-  // TODO: оптимизировать до перерисовывания только одной ячейки.
+  startGame.addEventListener('click', function(e){
+    e.preventDefault();
+    init();
+    print_field();
+  });
+
+  // TODO: Оптимизировать до перерисовывания только одной ячейки.
   // Отрисовываем все поле в соответствии со статусом клеток
   function update_field(){
     var i, j, x, y;
@@ -135,10 +179,25 @@ var Mines = (function(){
         ctx.restore();
       }
     }
+    fieldSquare.textContent = field.width * field.height;
+    fieldOpened.textContent = field.opened;
     buffer.field = ctx.getImageData(0,0,fieldCanvas.width,fieldCanvas.height);
   }
 
   function init(){
+    // Обнуление переменных к начальному состоянию
+    field = {
+      width: 10,
+      height: 10,
+      cells: [],
+      cell_size : 40,
+      opened: 0
+    };
+    if(timer.interval){
+      clearInterval(timer.interval);
+    }
+    mines = [];
+    gameOver = false;
     // Инициализация поля
     var i, j;
     for(i = 0; i<field.height; i++){
@@ -153,7 +212,7 @@ var Mines = (function(){
       count = mines_count,
       x,y,ix,jy;
     console.debug('Mines');
-    while(mines_count--){
+    while(count--){
       // генерируем координаты для мины
       do{
         x = getRandom(0, field.width);
@@ -171,6 +230,10 @@ var Mines = (function(){
         }
       }
     }
+    timer.start = moment();
+    timer.interval = setInterval(function(){
+      gameTimer.textContent = moment(moment().diff(timer.start)).format('mm:ss');
+    }, 1000);
   }
 
   return {
